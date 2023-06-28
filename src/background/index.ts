@@ -83,8 +83,10 @@ Browser.runtime.onConnect.addListener((port) => {
       } else {
         console.log(err)
         console.log(msg)
-        if (port) {
+        try {
           port.postMessage({ error: err.message })
+        } catch (err2: any) {
+          console.log(err2);
         }
       }
     }
