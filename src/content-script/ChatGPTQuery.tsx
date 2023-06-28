@@ -15,6 +15,7 @@ export type QueryStatus = 'success' | 'error' | undefined
 
 interface Props {
   question: string
+  activeLanguage: string
   promptSource: string
   onStatusChange?: (status: QueryStatus) => void
 }

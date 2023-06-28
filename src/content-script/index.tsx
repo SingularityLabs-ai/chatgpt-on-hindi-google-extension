@@ -23,7 +23,7 @@ async function mount(question: string, promptSource: string, siteConfig: SearchE
   } else {
     theme = userConfig.theme
   }
-  // let activeLanguage = userConfig.activeLanguage;
+  let activeLanguage = userConfig.activeLanguage;
 
   if (theme === Theme.Dark) {
     container.classList.add('gpt-dark')
@@ -42,10 +42,10 @@ async function mount(question: string, promptSource: string, siteConfig: SearchE
     }
   }
 
-      // activeLanguage={activeLanguage}
   render(
     <ChatGPTContainer
       question={question}
+      activeLanguage={activeLanguage}
       promptSource={promptSource}
       triggerMode={userConfig.triggerMode || 'always'}
     />,

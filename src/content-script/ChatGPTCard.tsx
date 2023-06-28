@@ -5,6 +5,7 @@ import ChatGPTQuery, { QueryStatus } from './ChatGPTQuery'
 
 interface Props {
   question: string
+  activeLanguage: string
   promptSource: string
   triggerMode: TriggerMode
   onStatusChange?: (status: QueryStatus) => void
