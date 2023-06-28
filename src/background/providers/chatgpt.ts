@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Browser from 'webextension-polyfill'
 import { fetchSSE } from '../fetch-sse'
 import { GenerateAnswerParams, Provider } from '../types'
+import { isDate } from '../../utils/parse'
 
 async function request(token: string, method: string, path: string, data?: unknown) {
   return fetch(`https://chat.openai.com/backend-api${path}`, {
@@ -104,7 +105,7 @@ export class ChatGPTProvider implements Provider {
         parent_message_id: params.parentMessageId || uuidv4(),
         conversation_id: params.conversationId,
       }),
-      onMessage(message: string) {
+      onMessage(message) {
         console.debug('sse message', message)
         if (message === '[DONE]') {
           params.onEvent({ type: 'done' })
@@ -115,7 +116,11 @@ export class ChatGPTProvider implements Provider {
         try {
           data = JSON.parse(message)
         } catch (err) {
-          console.error(err)
+          if (isDate(message)) {
+            console.log("known error, It's date", message);
+          } else {
+            console.error(err)
+          }
           return
         }
         const text = data.message?.content?.parts?.[0] + '✏'

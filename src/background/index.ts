@@ -4,6 +4,7 @@ import { getChatGPTChatIds, getProviderConfigs, ProviderType } from '../config'
 import { ChatGPTProvider, getChatGPTAccessToken, sendMessageFeedback } from './providers/chatgpt'
 import { OpenAIProvider } from './providers/openai'
 import { Provider } from './types'
+import { isDate } from '../utils/parse'
 
 async function generateAnswers(
   port: Browser.Runtime.Port,
@@ -64,6 +65,7 @@ async function generateAnswers(
   })
 }
 
+
 Browser.runtime.onConnect.addListener((port) => {
   port.onMessage.addListener(async (msg) => {
     console.debug('received question msg', msg)
@@ -76,8 +78,13 @@ Browser.runtime.onConnect.addListener((port) => {
         // msg.conversationContext,
       )
     } catch (err: any) {
-      console.log(err)
-      port.postMessage({ error: err.message })
+      if (isDate(msg)) {
+        console.log("known error, It's date", msg);
+      } else {
+        console.error(err)
+        if (port)
+          port.postMessage({ error: err.message })
+      }
     }
   })
 })
