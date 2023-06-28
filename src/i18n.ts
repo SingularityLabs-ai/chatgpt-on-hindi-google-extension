@@ -1213,15 +1213,20 @@ const resources = {
   },
 }
 
-i18n
-  .use(initReactI18next)
-  .use(LanguageDetector)
-  .init({
-    fallbackLng: 'hi-IN',
-    resources,
-    interpolation: {
-      escapeValue: false, // react already safes from xss
-    },
-  })
+import {  getUserConfig} from './config'
+
+getUserConfig().then((config) => {
+  i18n
+    .use(initReactI18next)
+    .use(LanguageDetector)
+    .init({
+      fallbackLng: 'en-US',
+      resources,
+      interpolation: {
+        escapeValue: false, // react already safes from xss
+      },
+    })
+})
 
 export default i18n
+

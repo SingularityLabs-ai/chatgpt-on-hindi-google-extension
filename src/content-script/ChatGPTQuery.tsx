@@ -10,6 +10,8 @@ import ChatGPTFeedback from './ChatGPTFeedback'
 import { isBraveBrowser, shouldShowRatingTip } from './utils.js'
 import { extract_followups_section, extract_followups } from '../utils/parse'
 import structuredClone from '@ungap/structured-clone';
+import { useTranslation } from 'react-i18next';
+import { i18n } from '../i18n';
 
 export type QueryStatus = 'success' | 'error' | undefined
 
@@ -31,6 +33,7 @@ interface ReQuestionAnswerProps {
 }
 
 function ChatGPTQuery(props: Props) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null)
   const [answer, setAnswer] = useState<Answer | null>(null)
   const [error, setError] = useState('')
@@ -276,11 +279,11 @@ function ChatGPTQuery(props: Props) {
               disabled={!reQuestionDone}
               type="text"
               ref={inputRef}
-              placeholder="Tell Me More"
+              placeholder={t("Tell Me More")}
               id="question"
             />
             <button id="submit" onClick={requeryHandler}>
-              ASK
+              Ask
             </button>
           </form>
         )}
@@ -327,7 +330,7 @@ function ChatGPTQuery(props: Props) {
     )
   }
 
-  return <p className="text-[#b6b8ba] animate-pulse">Waiting for ChatGPT...</p>
+  return (<p className="text-[#b6b8ba] animate-pulse">{t("Waiting for ChatGPT...")}</p>)
 }
 
 export default memo(ChatGPTQuery)

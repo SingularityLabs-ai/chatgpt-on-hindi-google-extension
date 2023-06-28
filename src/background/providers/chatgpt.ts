@@ -119,7 +119,8 @@ export class ChatGPTProvider implements Provider {
           if (isDate(message)) {
             console.log("known error, It's date", message);
           } else {
-            console.error(err)
+            console.log(err)
+            console.log(message)
           }
           return
         }

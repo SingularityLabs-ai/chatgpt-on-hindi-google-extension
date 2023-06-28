@@ -81,9 +81,11 @@ Browser.runtime.onConnect.addListener((port) => {
       if (isDate(msg)) {
         console.log("known error, It's date", msg);
       } else {
-        console.error(err)
-        if (port)
+        console.log(err)
+        console.log(msg)
+        if (port) {
           port.postMessage({ error: err.message })
+        }
       }
     }
   })
