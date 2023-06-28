@@ -41,7 +41,11 @@ async function generateAnswers(
   const controller = new AbortController()
   port.onDisconnect.addListener(() => {
     controller.abort()
-    cleanup?.()
+    try {
+      cleanup?.()
+    } catch (err) {
+      console.log(err)
+    }
   })
 
   const { cleanup } = await provider.generateAnswer({
@@ -72,7 +76,7 @@ Browser.runtime.onConnect.addListener((port) => {
         // msg.conversationContext,
       )
     } catch (err: any) {
-      console.error(err)
+      console.log(err)
       port.postMessage({ error: err.message })
     }
   })
