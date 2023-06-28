@@ -20,10 +20,10 @@ function ChooseLanguage(props: Props) {
   const { activeLanguage, setActiveLanguageCallback, languages } = props
   const { setToast } = useToasts()
 
-  const onSaveSelect = useCallback(() => {
-    updateUserConfig({ activeLanguage })
-    setToast(changeToast)
-  }, [setToast, activeLanguage])
+  // const onSaveSelect = useCallback(() => {
+  //   updateUserConfig({ activeLanguage })
+  //   setToast(changeToast)
+  // }, [setToast, activeLanguage])
 
   const onChangeSites = (value) => {
     setActiveLanguageCallback(value)
@@ -56,12 +56,6 @@ function ChooseLanguage(props: Props) {
                 })}
               </Radio.Group>
             </Card.Content>
-            <Card.Footer>
-              <Spacer w={2} />
-              <Button type="secondary" auto scale={1 / 3} onClick={onSaveSelect}>
-                Save
-              </Button>
-            </Card.Footer>
           </Card>
         </>
       )}

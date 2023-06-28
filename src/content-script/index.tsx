@@ -95,6 +95,7 @@ async function run() {
       const bodyInnerText = bodyElement.textContent.trim().replace(/\s+/g, ' ').substring(0, 1500)
       console.log('Body: ' + bodyInnerText)
       const userConfig = await getUserConfig()
+      console.log("userConfig", userConfig);
 
       const found = userConfig.promptOverrides.find(
         (override) => new URL(override.site).hostname === location.hostname,

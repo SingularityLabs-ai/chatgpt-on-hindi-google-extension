@@ -21,7 +21,7 @@ export enum Theme {
 }
 
 export enum Language {
-  Auto = 'auto',
+  Auto = 'hindi',
   English = 'english',
   Chinese = 'chinese',
   Spanish = 'spanish',
@@ -32,7 +32,7 @@ export enum Language {
   Portuguese = 'portuguese',
 }
 
-export const Prompt = 'Provide some insights on the following search query: '
+export const Prompt = 'Provide some insights in {{LANG}} on the following search query: '
 
 export interface SitePrompt {
   site: string
@@ -42,7 +42,7 @@ export interface SitePrompt {
 const userConfigWithDefaultValue = {
   triggerMode: TriggerMode.Always,
   theme: Theme.Auto,
-  language: Language.Auto,
+  activeLanguage: "hi-IN",
   prompt: Prompt,
   promptOverrides: [] as SitePrompt[],
 }
