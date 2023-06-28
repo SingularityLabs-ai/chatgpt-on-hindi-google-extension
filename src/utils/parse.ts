@@ -25,3 +25,9 @@ export function extract_followups(followup_section: string) {
   }
   return final_followups;
 }
+
+export const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+export const changeToast: { type: 'success'; text: string } = {
+  text: 'Changes saved',
+  type: 'success',
+}
