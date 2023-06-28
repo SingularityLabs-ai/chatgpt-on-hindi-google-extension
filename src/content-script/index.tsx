@@ -7,18 +7,24 @@ import ChatGPTContainer from './ChatGPTContainer'
 import { config, SearchEngine } from './search-engine-configs'
 import './styles.scss'
 import { getPossibleElementByQuerySelector } from './utils'
+import '../i18n'
+import { config as languages } from './language-configs'
+import { Language } from './language-configs'
 
 async function mount(question: string, promptSource: string, siteConfig: SearchEngine) {
   const container = document.createElement('div')
   container.className = 'chat-gpt-container'
 
   const userConfig = await getUserConfig()
+  console.log("userConfig", userConfig);
   let theme: Theme
   if (userConfig.theme === Theme.Auto) {
     theme = detectSystemColorScheme()
   } else {
     theme = userConfig.theme
   }
+  // let activeLanguage = userConfig.activeLanguage;
+
   if (theme === Theme.Dark) {
     container.classList.add('gpt-dark')
   } else {
@@ -36,6 +42,7 @@ async function mount(question: string, promptSource: string, siteConfig: SearchE
     }
   }
 
+      // activeLanguage={activeLanguage}
   render(
     <ChatGPTContainer
       question={question}
@@ -75,7 +82,7 @@ export async function requeryMount(question: string, index: number) {
 }
 
 const siteRegex = new RegExp(Object.keys(config).join('|'))
-let siteName
+let siteName = ""
 try {
   siteName = location.hostname.match(siteRegex)![0]
 } catch (error) {
@@ -95,15 +102,20 @@ async function run() {
       const bodyInnerText = bodyElement.textContent.trim().replace(/\s+/g, ' ').substring(0, 1500)
       console.log('Body: ' + bodyInnerText)
       const userConfig = await getUserConfig()
-      console.log("userConfig", userConfig);
 
       const found = userConfig.promptOverrides.find(
         (override) => new URL(override.site).hostname === location.hostname,
       )
-      const question = found?.prompt ?? userConfig.prompt
+      let activeLanguageName = "Hindi";
+      for (var key in languages) {
+        console.log(languages[key].code, userConfig.activeLanguage)
+        if(languages[key].code == userConfig.activeLanguage)
+          activeLanguageName = languages[key].name;
+      }
+      const question = found?.prompt ?? userConfig.prompt.replace("{{LANG}}", activeLanguageName)
       const promptSource = found?.site ?? 'default'
 
-      const final_prompt = question +  bodyInnerText + ". " +  followupQuestionsPrompt(bodyInnerText);
+      const final_prompt = question +  bodyInnerText + ". " +  followupQuestionsPrompt(bodyInnerText).replace("{{LANG}}", activeLanguageName);
       console.log('final prompt:', final_prompt);// question + bodyInnerText)
       mount(final_prompt, promptSource, siteConfig);
     }
