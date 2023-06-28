@@ -379,6 +379,10 @@ const resources = {
       "Message can not be empty.": "ਸੁਨੇਹਾ ਖਾਲੀ ਨਹੀਂ ਹੋ ਸਕਦਾ।",
       "Send": "ਭੇਜੋ",
       "Message": "ਸੁਨੇਹਾ",
+      "Waiting for HindGPT...": "ਹਿੰਦਜੀਪੀਟੀ ਲਈ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+      "Tell Me More": "ਮੈਨੂੰ ਹੋਰ ਦੱਸੋ",
+      "Trigger Mode": "ਟਰਿੱਗਰ ਮੋਡ",
+      "Ask HindGPT": "HindGPT ਨੂੰ ਪੁੱਛੋ",
     }
   },
   'mr': {
@@ -575,7 +579,11 @@ const resources = {
       "per month": "માસ પ્રત્યે",
       "Update": "અપડેટ",
       "Please contact OpenAI support to manage your subscription": "તમારી સબ્સક્રાઇપ્શન મેનેજ કરવા માટે OpenAI સપોર્ટ સંપર્ક કરો",
-      "Visit OpenAI Support": "OpenAI સપોર્ટ મુલાકાત લો"
+      "Visit OpenAI Support": "OpenAI સપોર્ટ મુલાકાત લો",
+      "Waiting for HindGPT...": "HindGPTની રાહ જોઈ રહ્યાં છીએ...",
+      "Tell Me More": "મને વધુ કહો",
+      "Trigger Mode": "ટ્રિગર મોડ",
+      "Ask HindGPT": "HindGPT ને પૂછો"
     }
   },
   'bn': {
@@ -658,7 +666,11 @@ const resources = {
         "সমস্ত তথ্য মুছে ফেলা হবে এবং পুনরুদ্ধার করা যাবে না। আপনি কি নিশ্চিত যে আপনি কথোপকথনটি পরিষ্কার করতে চান?",
       "Successfully cleared the conversation": "সফলভাবে কথোপকথন পরিষ্কার করা হয়েছে",
       "Confirm": "নিশ্চিত করুন",
-      "Cancel": "বাতিল করুন"
+      "Cancel": "বাতিল করুন",
+      "Waiting for HindGPT...": "HindGPT এর জন্য অপেক্ষা করছে...",
+      "Tell Me More": "আমাকে আরও বলুন",
+      "Trigger Mode": "ট্রিগার মোড",
+      "Ask HindGPT": "HindGPT কে জিজ্ঞাসা করুন",
     }
   },
   'or': {
@@ -730,8 +742,12 @@ const resources = {
       "Privacy policy": "ଗୋପନୀୟତା ନୀତି",
       "User agreement": "ବ୍ୟବହାରକାରୀ ସମ୍ମତି",
       "Exit": "ବାହାରେ ଯାଆ",
-      "Logout": "ଲଗଆଉଟ୍"
-    }    
+      "Logout": "ଲଗଆଉଟ୍",
+      "Waiting for HindGPT...": "HindGPT କୁ ଅପେକ୍ଷା ...",
+      "Tell Me More": "ମୋତେ ଅଧିକ କୁହ",
+      "Trigger Mode": "ଟ୍ରିଗର ମୋଡ୍",
+      "Ask HindGPT": "HindGPT କୁ ପଚାର |",
+    }
   },
   "kn": {
     "translation": {
@@ -944,7 +960,11 @@ const resources = {
       "Welcome to TruthGPT": "TruthGPT க்கு வரவேற்கிறோம்",
       "Open": "திற",
       "Copy": "நகலெடு",
-      "Done": "முடிந்தது"
+      "Done": "முடிந்தது",
+      "Waiting for HindGPT...": "HindGPTக்காக காத்திருக்கிறது...",
+      "Tell Me More": "மேலும் சொல்லுங்கள்",
+      "Trigger Mode": "தூண்டுதல் முறை",
+      "Ask HindGPT": "ஹிண்ட்ஜிபிடியைக் கேளுங்கள்"
     }
   },
   "te": {
@@ -1116,7 +1136,11 @@ const resources = {
       "Manage": "నిర్వహించు",
       "Cancel": "రద్దు చేయి",
       "FAQ": "ప్రశ్నలు",
-      "Contact us": "మాకు సంప్రదించండి"
+      "Contact us": "మాకు సంప్రదించండి",
+      "Waiting for HindGPT...": "HindGPT కోసం వేచి ఉంది...",
+      "Tell Me More": "నాకు మరింత చెప్పు",
+      "Trigger Mode": "ట్రిగ్గర్ మోడ్",
+      "Ask HindGPT": "HindGPTని అడగండి"
     }
   },
   "ml-IN": {
@@ -1180,7 +1204,11 @@ const resources = {
       "Support": "പിന്തുണ",
       "Pricing": "വില",
       "Token Packs": "ടോക്കൺ പാക്കുകൾ",
-      "View More": "കൂടുതൽ കാണുക"
+      "View More": "കൂടുതൽ കാണുക",
+      "Waiting for HindGPT...": "HindGPT-യ്‌ക്കായി കാത്തിരിക്കുന്നു...",
+      "Tell Me More": "കൂടുതൽ പറയൂ",
+      "Trigger Mode": "ട്രിഗർ മോഡ്",
+      "Ask HindGPT": "HindGPT-യോട് ചോദിക്കുക",
     }
   },
 }
