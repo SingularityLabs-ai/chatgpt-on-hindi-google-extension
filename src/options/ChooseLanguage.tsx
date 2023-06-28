@@ -10,14 +10,14 @@ import { changeToast, isIOS } from '../utils/parse'
 
 interface Props {
   activeLanguage: string
-  setActiveLanguage: (activeLanguage: string) => void
+  setActiveLanguageCallback: (activeLanguage: string) => void
   // allSites: string[]
   languages: Record<string, Language>
   // supportSites: Record<string, SearchEngine>
 }
 
 function ChooseLanguage(props: Props) {
-  const { activeLanguage, setActiveLanguage, languages } = props
+  const { activeLanguage, setActiveLanguageCallback, languages } = props
   const { setToast } = useToasts()
 
   const onSaveSelect = useCallback(() => {
@@ -26,7 +26,7 @@ function ChooseLanguage(props: Props) {
   }, [setToast, activeLanguage])
 
   const onChangeSites = (value) => {
-    setActiveLanguage(value)
+    setActiveLanguageCallback(value)
   }
 
   return (

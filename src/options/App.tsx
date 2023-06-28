@@ -16,10 +16,15 @@ import logo from '../logo.png'
 import { detectSystemColorScheme, getExtensionVersion } from '../utils'
 import AddNewPromptModal from './AddNewPromptModal'
 import PromptCard from './PromptCard'
+import ChooseLanguage from './ChooseLanguage'
+import { followupQuestionsPrompt } from '../utils/prompt'
+import { config as languages } from '../content-script/language-configs'
+import { config as supportSites } from '../content-script/search-engine-configs'
 
 function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => void }) {
   const [triggerMode, setTriggerMode] = useState<TriggerMode>(TriggerMode.Always)
   const [language, setLanguage] = useState<Language>(Language.Auto)
+  const [activeLanguage, setActiveLanguage] = useState<string>('')
   const [prompt, setPrompt] = useState<string>(Prompt)
   const [promptOverrides, setPromptOverrides] = useState<SitePrompt[]>([])
   const [modalVisible, setModalVisible] = useState<boolean>(false)
@@ -30,6 +35,7 @@ function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => voi
     getUserConfig().then((config) => {
       setTriggerMode(config.triggerMode)
       setLanguage(config.language)
+      setActiveLanguage(config.activeLanguage)
       setPrompt(config.prompt)
       setPromptOverrides(config.promptOverrides)
     })
@@ -56,6 +62,14 @@ function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => voi
     },
     [props, setToast],
   )
+
+  function setActiveLanguageCallback(activeLanguageVal) {
+    if (activeLanguageVal) {
+      setActiveLanguage(activeLanguageVal)
+    } else {
+      console.error("No activeLanguage Found")
+    }
+  };
 
   const onLanguageChange = useCallback(
     (language: Language) => {
@@ -97,6 +111,13 @@ function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => voi
       </nav>
       <main className="w-[600px] mx-auto mt-14">
         <Text h2>Options</Text>
+        <ChooseLanguage
+          activeLanguage={activeLanguage}
+          setActiveLanguageCallback={setActiveLanguageCallback}
+          languages={languages}
+          supportSites={supportSites}
+        />
+
         <Text h3 className="mt-5">
           Prompt
         </Text>
