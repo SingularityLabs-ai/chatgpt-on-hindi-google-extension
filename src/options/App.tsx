@@ -66,6 +66,8 @@ function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => voi
   function setActiveLanguageCallback(activeLanguageVal) {
     if (activeLanguageVal) {
       setActiveLanguage(activeLanguageVal)
+      updateUserConfig({ activeLanguage: activeLanguageVal })
+      setToast({ text: 'Changes saved', type: 'success' })
     } else {
       console.error("No activeLanguage Found")
     }
