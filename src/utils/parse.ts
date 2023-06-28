@@ -19,7 +19,7 @@ export function extract_followups(followup_section: string) {
       if (rawsplits[i].match(regnumexp)) {
         final_followups.push(rawsplits[i].slice(2).trim());
       } else if (rawsplits[i].match(regbulletexp)) {
-        final_followups.push(rawsplits[i].replace(/[^a-zA-Z ,?]/g, ""));
+        final_followups.push(rawsplits[i].replace("*","").replace("- "," "));//.replace(/[^a-zA-Z ,?]/g, ""));
       }
     }
   }
