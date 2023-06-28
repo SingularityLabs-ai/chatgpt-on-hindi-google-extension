@@ -33,13 +33,6 @@ function ChooseLanguage(props: Props) {
     <>
       {!isIOS && (
         <>
-          <Text h3 className="beyondbard--mt-5">
-            Enable/Disable BeyondBard
-            <Text font="12px" my={0}>
-              You can enable/disable the BeyondBard Summary on the following website.
-            </Text>
-          </Text>
-
           <Card>
             <Card.Content>
               <Radio.Group
