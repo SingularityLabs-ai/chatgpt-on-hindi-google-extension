@@ -304,7 +304,7 @@ function ChatGPTQuery(props: Props) {
               return (
                 <span className="block mt-2">
                   Still not working? Follow{' '}
-                  <a href="https://github.com/ishandutta2007/bard-google-extension#troubleshooting">
+                  <a href="https://github.com/ishandutta2007/chatgpt-on-hindi-google-extension#troubleshooting">
                     Brave Troubleshooting
                   </a>
                 </span>

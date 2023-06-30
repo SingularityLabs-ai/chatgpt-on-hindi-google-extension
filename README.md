@@ -6,7 +6,7 @@
 
 ## Screenshot
 
-<img width="1418" alt="image" src="https://github.com/ishandutta2007/bard-google-extension/blob/main/screenshots/GBARD_Screenshot1280x800.png">
+<img width="1920" alt="image" src="https://github.com/ishandutta2007/chatgpt-on-hindi-google-extension/blob/main/screenshots/jaihind_onehandupblackflag_1920x1080.png">
 
 ## Troubleshooting
 
