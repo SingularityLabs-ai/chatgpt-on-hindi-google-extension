@@ -204,22 +204,6 @@ function ChatGPTQuery(props: Props) {
     let followup_section = extract_followups_section(answer.text);
     let final_followups = extract_followups(followup_section);
 
-    if (followup_section.length > 0) {
-      let rawsplits = followup_section.split("\n");
-      for(var i = 0; i < rawsplits.length; i++) {
-        let regnumexp = /[0-9]..*/gi;
-        let regbulletexp = /\* .*/gi;
-        if (rawsplits[i].match(regnumexp)) {
-          final_followups.push(rawsplits[i].slice(2).trim());
-        } else if (rawsplits[i].match(regbulletexp)) {
-          let finesplits = rawsplits[i].split("* ");
-          if (finesplits[finesplits.length-1].length > 4 && finesplits[finesplits.length-1].trim()[finesplits[finesplits.length-1].trim().length-1]=="?")
-            final_followups.push(finesplits[finesplits.length-1].trim());
-        }
-      }
-    }
-    let final_followups_deduped = [...new Set(final_followups)];
-
     return (
       <div className="markdown-body gpt-markdown" id="gpt-answer" dir="auto">
         <div className="gpt-header">
@@ -237,7 +221,7 @@ function ChatGPTQuery(props: Props) {
           {answer.text.replace(followup_section, "")}
         </ReactMarkdown>
         <div className="all-questions-container">
-          {final_followups_deduped.map((followup_question, index) => (
+          {final_followups.map((followup_question, index) => (
             <div className="ith-question-container" key={index}>
               {(
                 <FollowupQuestionFixed followup_question={followup_question} />

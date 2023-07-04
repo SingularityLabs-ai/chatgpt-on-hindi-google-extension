@@ -19,11 +19,20 @@ export function extract_followups(followup_section: string) {
       if (rawsplits[i].match(regnumexp)) {
         final_followups.push(rawsplits[i].slice(2).trim());
       } else if (rawsplits[i].match(regbulletexp)) {
-        final_followups.push(rawsplits[i].replace("*","").replace("- "," "));//.replace(/[^a-zA-Z ,?]/g, ""));
+        let x = rawsplits[i].replace("*","").replace("- "," ").trim(); //.replace(/[^a-zA-Z ,?]/g, ""));
+        if (x) {
+          final_followups.push(x);
+        } else {
+          final_followups.push();//
+          let finesplits = rawsplits[i].split("* ");
+          if (finesplits[finesplits.length-1].length > 4 && finesplits[finesplits.length-1].trim()[finesplits[finesplits.length-1].trim().length-1]=="?")
+            final_followups.push(finesplits[finesplits.length-1].trim());
+        }
       }
     }
   }
-  return final_followups;
+  let final_followups_deduped = [...new Set(final_followups)];
+  return final_followups_deduped;
 }
 
 export const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)

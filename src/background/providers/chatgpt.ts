@@ -109,7 +109,7 @@ export class ChatGPTProvider implements Provider {
         console.debug('sse message', message)
         if (message === '[DONE]') {
           params.onEvent({ type: 'done' })
-          cleanup()
+          // cleanup()
           return
         }
         let data
