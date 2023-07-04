@@ -1,29 +1,29 @@
 import { render } from 'preact'
+import { ToastContainer } from 'react-toastify'
 import '../base.css'
 import { getUserConfig, Theme } from '../config'
-import { followupQuestionsPrompt } from '../utils/prompt'
+import '../i18n'
 import { detectSystemColorScheme } from '../utils'
+import { followupQuestionsPrompt } from '../utils/prompt'
 import ChatGPTContainer from './ChatGPTContainer'
+import { config as languages } from './language-configs'
 import { config, SearchEngine } from './search-engine-configs'
 import './styles.scss'
 import { getPossibleElementByQuerySelector } from './utils'
-import '../i18n'
-import { config as languages } from './language-configs'
-import { Language } from './language-configs'
 
 async function mount(question: string, promptSource: string, siteConfig: SearchEngine) {
   const container = document.createElement('div')
   container.className = 'chat-gpt-container'
 
   const userConfig = await getUserConfig()
-  console.log("userConfig", userConfig);
+  console.log('userConfig', userConfig)
   let theme: Theme
   if (userConfig.theme === Theme.Auto) {
     theme = detectSystemColorScheme()
   } else {
     theme = userConfig.theme
   }
-  let activeLanguage = userConfig.activeLanguage;
+  const activeLanguage = userConfig.activeLanguage
 
   if (theme === Theme.Dark) {
     container.classList.add('gpt-dark')
@@ -43,12 +43,15 @@ async function mount(question: string, promptSource: string, siteConfig: SearchE
   }
 
   render(
-    <ChatGPTContainer
-      question={question}
-      activeLanguage={activeLanguage}
-      promptSource={promptSource}
-      triggerMode={userConfig.triggerMode || 'always'}
-    />,
+    <div>
+      <ChatGPTContainer
+        question={question}
+        activeLanguage={activeLanguage}
+        promptSource={promptSource}
+        triggerMode={userConfig.triggerMode || 'always'}
+      />
+      <ToastContainer />
+    </div>,
     container,
   )
 }
@@ -82,7 +85,7 @@ export async function requeryMount(question: string, index: number) {
 }
 
 const siteRegex = new RegExp(Object.keys(config).join('|'))
-let siteName = ""
+let siteName = ''
 try {
   siteName = location.hostname.match(siteRegex)![0]
 } catch (error) {
@@ -106,18 +109,22 @@ async function run() {
       const found = userConfig.promptOverrides.find(
         (override) => new URL(override.site).hostname === location.hostname,
       )
-      let activeLanguageName = "Hindi";
-      for (var key in languages) {
+      let activeLanguageName = 'Hindi'
+      for (const key in languages) {
         console.log(languages[key].code, userConfig.activeLanguage)
-        if(languages[key].code == userConfig.activeLanguage)
-          activeLanguageName = languages[key].name;
+        if (languages[key].code == userConfig.activeLanguage)
+          activeLanguageName = languages[key].name
       }
-      const question = found?.prompt ?? userConfig.prompt.replace("{{LANG}}", activeLanguageName)
+      const question = found?.prompt ?? userConfig.prompt.replace('{{LANG}}', activeLanguageName)
       const promptSource = found?.site ?? 'default'
 
-      const final_prompt = question +  bodyInnerText + ". " +  followupQuestionsPrompt(bodyInnerText).replace("{{LANG}}", activeLanguageName);
-      console.log('final prompt:', final_prompt);// question + bodyInnerText)
-      mount(final_prompt, promptSource, siteConfig);
+      const final_prompt =
+        question +
+        bodyInnerText +
+        '. ' +
+        followupQuestionsPrompt(bodyInnerText).replace('{{LANG}}', activeLanguageName)
+      console.log('final prompt:', final_prompt) // question + bodyInnerText)
+      mount(final_prompt, promptSource, siteConfig)
     }
   }
 }

@@ -1,17 +1,17 @@
 import { GearIcon } from '@primer/octicons-react'
 import { useEffect, useState } from 'preact/hooks'
 import { memo, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import rehypeHighlight from 'rehype-highlight'
 import Browser from 'webextension-polyfill'
 import { captureEvent } from '../analytics'
 import { Answer } from '../messaging'
+import { extract_followups, extract_followups_section } from '../utils/parse'
 import ChatGPTFeedback from './ChatGPTFeedback'
-import { isBraveBrowser, shouldShowRatingTip } from './utils.js'
-import { extract_followups_section, extract_followups } from '../utils/parse'
-import structuredClone from '@ungap/structured-clone';
-import { useTranslation } from 'react-i18next';
-import { i18n } from '../i18n';
+import { isBraveBrowser } from './utils.js'
 
 export type QueryStatus = 'success' | 'error' | undefined
 
@@ -33,7 +33,7 @@ interface ReQuestionAnswerProps {
 }
 
 function ChatGPTQuery(props: Props) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   const [answer, setAnswer] = useState<Answer | null>(null)
   const [error, setError] = useState('')
@@ -60,6 +60,7 @@ function ChatGPTQuery(props: Props) {
       } else if (msg.error) {
         setError(msg.error)
         setStatus('error')
+        toast.error(msg.error)
       } else if (msg.event === 'DONE') {
         setDone(true)
         setReQuestionDone(true)
@@ -121,12 +122,15 @@ function ChatGPTQuery(props: Props) {
           setRequestionList(requestionListValue)
           const latestAnswerText = requestionList[questionIndex]?.answer?.text
           setReQuestionLatestAnswerText(latestAnswerText)
+        } else if (msg.error) {
+          setReError(msg.error)
+          toast.error(msg.error)
         } else if (msg.event === 'DONE') {
           setReQuestionDone(true)
           setQuestionIndex(questionIndex + 1)
         }
       } catch {
-        setReError(msg.error)
+        console.log(e)
       }
     }
     port.onMessage.addListener(listener)
@@ -164,19 +168,29 @@ function ChatGPTQuery(props: Props) {
     }
   }, [requestionList, questionIndex])
 
-  const FollowupQuestionFixed = ({ followup_question }: { followup_question: string | undefined }) => {
+  const FollowupQuestionFixed = ({
+    followup_question,
+  }: {
+    followup_question: string | undefined
+  }) => {
     const clickCopyToInput = useCallback(async () => {
       if (reQuestionDone) {
-        inputRef.current.value = followup_question;
-        setTimeout(() => {requeryHandler()}, 500);
+        inputRef.current.value = followup_question
+        setTimeout(() => {
+          requeryHandler()
+        }, 500)
       } else {
-        console.log("Wait untill the earlier prompt completes..");
+        const warnMsg = 'Wait untill the earlier prompt completes'
+        console.log(warnMsg + '..')
+        toast.warn(warnMsg)
       }
     }, [followup_question])
 
     return (
-      <div class="followup-question-container" onClick={clickCopyToInput}>
-        <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>{followup_question}</ReactMarkdown>
+      <div className="followup-question-container" onClick={clickCopyToInput}>
+        <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true }]]}>
+          {followup_question}
+        </ReactMarkdown>
       </div>
     )
   }
@@ -200,9 +214,9 @@ function ChatGPTQuery(props: Props) {
   }
 
   if (answer) {
-    console.log("answer.text", answer.text);
-    let followup_section = extract_followups_section(answer.text);
-    let final_followups = extract_followups(followup_section);
+    console.log('answer.text', answer.text)
+    const followup_section = extract_followups_section(answer.text)
+    const final_followups = extract_followups(followup_section)
 
     return (
       <div className="markdown-body gpt-markdown" id="gpt-answer" dir="auto">
@@ -218,14 +232,12 @@ function ChatGPTQuery(props: Props) {
           />
         </div>
         <ReactMarkdown rehypePlugins={[[rehypeHighlight, { detect: true, ignoreMissing: true }]]}>
-          {answer.text.replace(followup_section, "")}
+          {answer.text.replace(followup_section, '')}
         </ReactMarkdown>
         <div className="all-questions-container">
           {final_followups.map((followup_question, index) => (
             <div className="ith-question-container" key={index}>
-              {(
-                <FollowupQuestionFixed followup_question={followup_question} />
-              )}
+              {<FollowupQuestionFixed followup_question={followup_question} />}
             </div>
           ))}
         </div>
@@ -263,7 +275,7 @@ function ChatGPTQuery(props: Props) {
               disabled={!reQuestionDone}
               type="text"
               ref={inputRef}
-              placeholder={t("Tell Me More")}
+              placeholder={t('Tell Me More')}
               id="question"
             />
             <button id="submit" onClick={requeryHandler}>
@@ -314,7 +326,7 @@ function ChatGPTQuery(props: Props) {
     )
   }
 
-  return (<p className="text-[#b6b8ba] animate-pulse">{t("Waiting for ChatGPT...")}</p>)
+  return <p className="text-[#b6b8ba] animate-pulse">{t('Waiting for ChatGPT...')}</p>
 }
 
 export default memo(ChatGPTQuery)
