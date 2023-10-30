@@ -1,14 +1,15 @@
 import Browser from 'webextension-polyfill'
 import { getChatGPTChatIds, getProviderConfigs, ProviderType } from '../config'
 // import { BARDProvider, sendMessageFeedbackBard } from './providers/bard'
+import { isDate } from '../utils/parse'
 import { ChatGPTProvider, getChatGPTAccessToken, sendMessageFeedback } from './providers/chatgpt'
 import { OpenAIProvider } from './providers/openai'
 import { Provider } from './types'
-import { isDate } from '../utils/parse'
 
 async function generateAnswers(
   port: Browser.Runtime.Port,
   question: string,
+  arkose_token: string,
   conversationId: string | undefined,
   parentMessageId: string | undefined,
   // conversationContext: ConversationContext | undefined,
@@ -62,9 +63,9 @@ async function generateAnswers(
     conversationId: conversationId, //used for chatGPT
     parentMessageId: parentMessageId, //used for chatGPT
     // conversationContext: conversationContext, //used for BARD
+    arkoseToken: arkose_token,
   })
 }
-
 
 Browser.runtime.onConnect.addListener((port) => {
   port.onMessage.addListener(async (msg) => {
@@ -73,20 +74,21 @@ Browser.runtime.onConnect.addListener((port) => {
       await generateAnswers(
         port,
         msg.question,
+        msg.arkose_token,
         msg.conversationId,
         msg.parentMessageId,
         // msg.conversationContext,
       )
     } catch (err: any) {
       if (isDate(msg)) {
-        console.log("known error, It's date", msg);
+        console.log("known error, It's date", msg)
       } else {
         console.log(err)
         console.log(msg)
         try {
           port.postMessage({ error: err.message })
         } catch (err2: any) {
-          console.log(err2);
+          console.log(err2)
         }
       }
     }

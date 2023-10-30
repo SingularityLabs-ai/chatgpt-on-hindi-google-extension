@@ -5,6 +5,7 @@ import { getUserConfig, Theme } from '../config'
 import '../i18n'
 import { detectSystemColorScheme } from '../utils'
 import { followupQuestionsPrompt } from '../utils/prompt'
+import { getArkoseToken } from './arkose'
 import ChatGPTContainer from './ChatGPTContainer'
 import { config as languages } from './language-configs'
 import { config, SearchEngine } from './search-engine-configs'
@@ -42,10 +43,12 @@ async function mount(question: string, promptSource: string, siteConfig: SearchE
     }
   }
 
+  const arkoseToken = await getArkoseToken()
   render(
     <div>
       <ChatGPTContainer
         question={question}
+        arkoseToken={arkoseToken}
         activeLanguage={activeLanguage}
         promptSource={promptSource}
         triggerMode={userConfig.triggerMode || 'always'}

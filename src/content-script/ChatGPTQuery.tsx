@@ -20,6 +20,7 @@ interface Props {
   activeLanguage: string
   promptSource: string
   onStatusChange?: (status: QueryStatus) => void
+  arkoseToken: string
 }
 
 interface Requestion {
@@ -75,7 +76,7 @@ function ChatGPTQuery(props: Props) {
       }
     }
     port.onMessage.addListener(listener)
-    port.postMessage({ question: props.question })
+    port.postMessage({ question: props.question, arkose_token: props.arkoseToken })
     return () => {
       port.onMessage.removeListener(listener)
       port.disconnect()
@@ -145,6 +146,7 @@ function ChatGPTQuery(props: Props) {
       //   questionIndex == 0
       //     ? answer?.conversationContext
       //     : requestionList[questionIndex - 1].answer?.conversationContext,
+      arkose_token: props.arkoseToken,
     })
     return () => {
       port.onMessage.removeListener(listener)
@@ -228,6 +230,7 @@ function ChatGPTQuery(props: Props) {
           <ChatGPTFeedback
             messageId={answer.messageId}
             conversationId={answer.conversationId}
+            arkoseToken={props.arkoseToken}
             latestAnswerText={answer.text}
           />
         </div>

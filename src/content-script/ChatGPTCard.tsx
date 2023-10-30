@@ -9,6 +9,7 @@ interface Props {
   promptSource: string
   triggerMode: TriggerMode
   onStatusChange?: (status: QueryStatus) => void
+  arkoseToken: string
 }
 
 function ChatGPTCard(props: Props) {
