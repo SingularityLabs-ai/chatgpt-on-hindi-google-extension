@@ -12,14 +12,13 @@ import {
   TRIGGER_MODE_TEXT,
   updateUserConfig,
 } from '../config'
+import { config as languages } from '../content-script/language-configs'
+import { config as supportSites } from '../content-script/search-engine-configs'
 import logo from '../logo.png'
 import { detectSystemColorScheme, getExtensionVersion } from '../utils'
 import AddNewPromptModal from './AddNewPromptModal'
-import PromptCard from './PromptCard'
 import ChooseLanguage from './ChooseLanguage'
-import { followupQuestionsPrompt } from '../utils/prompt'
-import { config as languages } from '../content-script/language-configs'
-import { config as supportSites } from '../content-script/search-engine-configs'
+import PromptCard from './PromptCard'
 
 function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => void }) {
   const [triggerMode, setTriggerMode] = useState<TriggerMode>(TriggerMode.Always)
@@ -69,9 +68,9 @@ function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => voi
       updateUserConfig({ activeLanguage: activeLanguageVal })
       setToast({ text: 'Changes saved', type: 'success' })
     } else {
-      console.error("No activeLanguage Found")
+      console.error('No activeLanguage Found')
     }
-  };
+  }
 
   const onLanguageChange = useCallback(
     (language: Language) => {
@@ -89,7 +88,7 @@ function OptionsPage(props: { theme: Theme; onThemeChange: (theme: Theme) => voi
           <span className="font-semibold">HindGPT(v{getExtensionVersion()})</span>
         </div>
         <div className="flex flex-row gap-3">
-          <a href="https://discord.gg/sXdRc6ZH" target="_blank" rel="noreferrer">
+          <a href="https://discord.gg/jc4xtF58Ve" target="_blank" rel="noreferrer">
             Discord
           </a>
           <a
