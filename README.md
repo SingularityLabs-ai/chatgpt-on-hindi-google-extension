@@ -17,7 +17,7 @@ English &nbsp;&nbsp;|&nbsp;&nbsp; [Indonesia](README_IN.md) &nbsp;&nbsp;|&nbsp;&
 ### Install
 
 
-<a href="https://chrome.google.com/webstore/detail/HindGPT-chatgpt-on-goog/pabeminldebomngnkgffiejipjjaaogi">
+<a href="https://chromewebstore.google.com/detail/hindgpt-chatgpt-in-indian/meekeejnaelkiggfhdfjaolehdchhoop">
     <img src="https://user-images.githubusercontent.com/64502893/231991498-8df6dd63-727c-41d0-916f-c90c15127de3.png" width="200" alt="Get BharatGPT for Chromium">
 </a><a href="https://microsoftedge.microsoft.com/addons/detail/HindGPT-chatgpt-in-india/ddapjedokkkncmcmgkkpmcdaiadjldkh">
     <img src="https://user-images.githubusercontent.com/64502893/231991158-1b54f831-2fdc-43b6-bf9a-f894000e5aa8.png" width="160" alt="Get BharatGPT for Microsoft Edge">
