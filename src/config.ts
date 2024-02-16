@@ -39,12 +39,18 @@ export interface SitePrompt {
   prompt: string
 }
 
+export enum ChatgptMode {
+  SSE = 'Server-Sent-Events',
+  WSS = 'Web-Sockets',
+}
+
 const userConfigWithDefaultValue = {
   triggerMode: TriggerMode.Always,
   theme: Theme.Auto,
-  activeLanguage: "hi-IN",
+  activeLanguage: 'hi-IN',
   prompt: Prompt,
   promptOverrides: [] as SitePrompt[],
+  chatgptMode: ChatgptMode.SSE,
 }
 
 export type UserConfig = typeof userConfigWithDefaultValue

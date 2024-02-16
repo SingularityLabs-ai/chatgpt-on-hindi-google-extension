@@ -7,6 +7,7 @@ import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import rehypeHighlight from 'rehype-highlight'
 import Browser from 'webextension-polyfill'
+import { ChatgptMode, getUserConfig, updateUserConfig } from '~config'
 import { captureEvent } from '../analytics'
 import { Answer } from '../messaging'
 import { extract_followups, extract_followups_section } from '../utils/parse'
@@ -52,16 +53,68 @@ function ChatGPTQuery(props: Props) {
     props.onStatusChange?.(status)
   }, [props, status])
 
+  async function resetChatgptModeAutochangeTimes() {
+    Browser.storage.sync.set({ chatgptModeAutochangeTimes: 0 })
+  }
+
+  async function switchChatgptModeAutochangeTimes() {
+    //increments only on both auto and manual action and only for invalid model error
+    const { chatgptModeAutochangeTimes = 0 } = await Browser.storage.sync.get(
+      'chatgptModeAutochangeTimes',
+    )
+    console.log(
+      'ChatgptQuery:switchChatgptModeAutochangeTimes:chatgptModeAutochangeTimes(before):',
+      chatgptModeAutochangeTimes,
+    )
+    Browser.storage.sync.set({ chatgptModeAutochangeTimes: chatgptModeAutochangeTimes + 1 })
+    return chatgptModeAutochangeTimes
+  }
   useEffect(() => {
     const port = Browser.runtime.connect()
     const listener = (msg: any) => {
       if (msg.text) {
         setAnswer(msg)
         setStatus('success')
-      } else if (msg.error) {
-        setError(msg.error)
+      } else if (msg.error || msg.event === 'ERROR') {
+        if (msg.error) {
+          console.log('ChatgptQuery:Uncaucht error', msg)
+          setError(msg.error)
+        } else if (msg.event === 'ERROR') {
+          console.log('ChatgptQuery:Caught error', msg)
+          if (msg.message.includes('wss_url')) {
+            setAnswer({
+              text: 'ChatGPT uses WebSockets in your area, please reload page for settings to auto adjust to support WebSockets',
+              messageId: '',
+              conversationId: '',
+              parentMessageId: '',
+              conversationContext: '',
+            })
+            setStatus('success')
+            getUserConfig().then((config) => {
+              switchChatgptModeAutochangeTimes().then((t) => {
+                console.log(
+                  'ChatgptQuery:updateUserConfig:chatgptMode(before):',
+                  config.chatgptMode,
+                )
+                try {
+                  if (config.chatgptMode === ChatgptMode.SSE) {
+                    updateUserConfig({ chatgptMode: ChatgptMode.WSS })
+                    window.location.reload()
+                  }
+                } catch (ex) {
+                  console.log('ChatgptQuery:ex', ex)
+                }
+              })
+            })
+          } else {
+            setError("It's not due to us, dont blame us. Hopefully ChatGPT will fix it soon")
+          }
+        } else {
+          console.log('ChatgptQuery:WTF error', msg)
+          setError('WTF error')
+        }
         setStatus('error')
-        toast.error(msg.error)
+        toast.error(msg.error, { position: 'bottom-right', transition: Zoom })
       } else if (msg.event === 'DONE') {
         setDone(true)
         setReQuestionDone(true)
