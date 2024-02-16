@@ -9,6 +9,7 @@ import { getArkoseToken } from './arkose'
 import ChatGPTContainer from './ChatGPTContainer'
 import { config as languages } from './language-configs'
 import { config, SearchEngine } from './search-engine-configs'
+import SingularityLabsSocial from './SingularityLabsSocial'
 import './styles.scss'
 import { getPossibleElementByQuerySelector } from './utils'
 
@@ -53,6 +54,7 @@ async function mount(question: string, promptSource: string, siteConfig: SearchE
         promptSource={promptSource}
         triggerMode={userConfig.triggerMode || 'always'}
       />
+      <SingularityLabsSocial theme={theme} appWidth="Narrow" />
       <ToastContainer />
     </div>,
     container,
