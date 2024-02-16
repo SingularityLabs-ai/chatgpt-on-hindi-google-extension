@@ -249,7 +249,7 @@ export class ChatGPTProvider implements Provider {
           finaltext += text
           if (countWords(text) == 1 && data.message?.author?.role == 'assistant') {
             if (params.prompt.indexOf('search query:') !== -1) {
-              this.renameConversationTitle(data.conversation_id)
+              this.renameConversationTitle(data.conversation_id, params)
             }
           }
           params.onEvent({
@@ -345,7 +345,7 @@ export class ChatGPTProvider implements Provider {
           if (text) {
             if (countWords(text) == 1 && data.message?.author?.role == 'assistant') {
               if (params.prompt.indexOf('search query:') !== -1) {
-                this.renameConversationTitle(data.conversation_id)
+                this.renameConversationTitle(data.conversation_id, params)
               }
             }
             params.onEvent({
@@ -400,7 +400,7 @@ export class ChatGPTProvider implements Provider {
     return resp
   }
 
-  async renameConversationTitle(convId: string) {
+  async renameConversationTitle(convId: string, params: GenerateAnswerParams) {
     const titl: string = getConversationTitle(params.prompt)
     console.log('renameConversationTitle:', this.token, convId, titl)
     setConversationProperty(this.token, convId, { title: titl })
