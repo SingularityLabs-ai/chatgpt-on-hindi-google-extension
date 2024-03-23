@@ -72,6 +72,7 @@ function ChatGPTQuery(props: Props) {
   useEffect(() => {
     const port = Browser.runtime.connect()
     const listener = (msg: any) => {
+      console.log('msg:', msg)
       if (msg.text) {
         setAnswer(msg)
         setStatus('success')
@@ -169,6 +170,7 @@ function ChatGPTQuery(props: Props) {
     if (!requestionList[questionIndex]) return
     const port = Browser.runtime.connect()
     const listener = (msg: any) => {
+      console.log('re:msg:', msg)
       try {
         if (msg.text) {
           const requestionListValue = requestionList

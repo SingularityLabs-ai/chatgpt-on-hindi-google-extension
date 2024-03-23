@@ -5,9 +5,8 @@ import ExpiryMap from 'expiry-map'
 import { v4 as uuidv4 } from 'uuid'
 import Browser from 'webextension-polyfill'
 import WebSocketAsPromised from 'websocket-as-promised'
-import { ChatgptMode, getUserConfig } from '~config'
-import { ADAY, APPSHORTNAME, HALFHOUR } from '~utils/consts'
-import { parseSSEResponse } from '~utils/sse'
+import { parseSSEResponse, parseSSEResponse3 } from '~utils/sse'
+import { ADAY, APPSHORTNAME, HALFHOUR } from '../../utils/consts'
 import { fetchSSE } from '../fetch-sse'
 import { GenerateAnswerParams, Provider } from '../types'
 dayjs().format()
@@ -195,75 +194,46 @@ export class ChatGPTProvider implements Provider {
     }
   }
 
-  async generateAnswerBySSE(params: GenerateAnswerParams, cleanup: () => void) {
-    console.debug('ChatGPTProvider:generateAnswerBySSE:', params)
-    const modelName = await this.getModelName()
-    console.debug('ChatGPTProvider:modelName:', modelName)
-    await fetchSSE('https://chat.openai.com/backend-api/conversation', {
+  private renameConversationTitle(convId: string, params: SendMessageParams) {
+    const titl: string = getConversationTitle(params.prompt)
+    console.log('renameConversationTitle:', this.token, convId, titl)
+    setConversationProperty(this.token, convId, { title: titl })
+  }
+
+  async getChatRequirementsToken(params: SendMessageParams) {
+    const resp = await fetch('https://chat.openai.com/backend-api/sentinel/chat-requirements', {
       method: 'POST',
       signal: params.signal,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.token}`,
-        'Openai-Sentinel-Arkose-Token': params.arkoseToken,
+        conversation_mode_kind: 'primary_assistant',
       },
       body: JSON.stringify({
-        action: 'next',
-        messages: [
-          {
-            id: uuidv4(),
-            role: 'user',
-            content: {
-              content_type: 'text',
-              parts: [params.prompt],
-            },
-          },
-        ],
-        model: modelName,
-        parent_message_id: params.parentMessageId || uuidv4(),
-        conversation_id: params.conversationId,
-        arkose_token: params.arkoseToken,
+        conversation_mode_kind: 'primary_assistant',
       }),
-      onMessage(message: string) {
-        console.debug('ChatGPTProvider:generateAnswerBySSE:message', message)
-        let finaltext = ''
-        if (message.includes('wss_url')) {
-          params.onEvent({ type: 'error', message: message })
-          cleanup()
-          return
-        }
-        if (message === '[DONE]') {
-          params.onEvent({ type: 'done' })
-          cleanup()
-          return
-        }
-        let data
-        try {
-          data = JSON.parse(message)
-        } catch (err) {
-          console.error(err)
-          return
-        }
-        const text = data.message?.content?.parts?.[0]
-        if (text) {
-          finaltext += text
-          if (countWords(text) == 1 && data.message?.author?.role == 'assistant') {
-            if (params.prompt.indexOf('search query:') !== -1) {
-              this.renameConversationTitle(data.conversation_id, params)
-            }
-          }
-          params.onEvent({
-            type: 'answer',
-            data: {
-              finaltext,
-              messageId: data.message.id,
-              parentMessageId: data.parent_message_id,
-              conversationId: data.conversation_id,
-            },
-          })
-        }
-      },
     })
+    console.log('getChatRequirements:resp:', resp)
+    let retToken = ''
+    await parseSSEResponse3(resp, (message: any) => {
+      console.log('getChatRequirements:message:', message)
+      retToken = message.token
+    })
+    console.log('retToken:', retToken)
+    return retToken
+  }
+
+  async registerWSS(params: GenerateAnswerParams) {
+    const resp = await fetch('https://chat.openai.com/backend-api/register-websocket', {
+      method: 'POST',
+      signal: params.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.token}`,
+      },
+      body: void 0,
+    })
+    return resp
   }
 
   async setupWSS(params: GenerateAnswerParams, regResp: any) {
@@ -294,6 +264,7 @@ export class ChatGPTProvider implements Provider {
       }
 
       let next_check_seqid = Math.round(Math.random() * 50)
+      let lastSendTextLen = 0
       const messageListener = (message: any) => {
         // console.log('ChatGPTProvider:setupWebsocket:wsp.onMessage:', message)
         const jjws = JSON.parse(message)
@@ -333,7 +304,7 @@ export class ChatGPTProvider implements Provider {
           let text: string
           if (content.content_type === 'text') {
             text = content.parts[0]
-            text = removeCitations(text)
+            // text = removeCitations(text)
           } else if (content.content_type === 'code') {
             text = '_' + content.text + '_'
           } else {
@@ -343,23 +314,29 @@ export class ChatGPTProvider implements Provider {
             return
           }
           if (text) {
-            if (countWords(text) == 1 && data.message?.author?.role == 'assistant') {
+            if (data.message?.author?.role == 'assistant') {
               if (params.prompt.indexOf('search query:') !== -1) {
-                this.renameConversationTitle(data.conversation_id, params)
+                // this.renameConversationTitle(data.conversation_id, params)
               }
-            }
-            params.onEvent({
-              type: 'answer',
-              data: {
+              console.debug(
+                'ChatGPTProvider:generateAnswerBySSE:answer:text(setupWSS:messageListener):',
                 text,
-                messageId: data.message.id,
-                parentMessageId: data.parent_message_id,
-                conversationId: data.conversation_id,
-              },
-            })
+              )
+              params.onEvent({
+                type: 'answer',
+                data: {
+                  text,
+                  messageId: data.message.id,
+                  parentMessageId: data.parent_message_id,
+                  conversationId: data.conversation_id,
+                },
+              })
+            }
           }
         })
+        // if (finalMessageStr.length - lastSendTextLen > 40)
         parser.feed(finalMessageStr)
+        lastSendTextLen = finalMessageStr.length
 
         const sequenceId = jjws['sequenceId']
         console.log('ChatGPTProvider:doSendMessage:sequenceId:', sequenceId)
@@ -368,8 +345,12 @@ export class ChatGPTProvider implements Provider {
             type: 'sequenceAck',
             sequenceId: next_check_seqid,
           }
-          wsp.send(JSON.stringify(t))
-          next_check_seqid += Math.round(Math.random() * 50)
+          if (wsp.isOpened) {
+            wsp.send(JSON.stringify(t))
+            next_check_seqid += Math.round(Math.random() * 50)
+          } else {
+            console.log('ChatGPTProvider:doSendMessage:WebSocket is not open:wsp, t:', wsp, t)
+          }
         }
       }
       wsp.removeAllListeners()
@@ -378,7 +359,7 @@ export class ChatGPTProvider implements Provider {
       wsp.onMessage.addListener(messageListener)
       wsp.onClose.removeListener(messageListener)
       wsp.open().catch(async (e) => {
-        console.log('ChatGPTProvider:doSendMessage:showError:Error caught while opening ws', e)
+        console.log('ChatGPTProvider:doSendMessage:open:showError:Error caught while opening ws', e)
         wsp.removeAllListeners()
         wsp.close()
         await setChatgptwssIsOpenFlag(false)
@@ -387,43 +368,107 @@ export class ChatGPTProvider implements Provider {
     }
   }
 
-  async registerWSS(params: GenerateAnswerParams) {
-    const resp = await fetch('https://chat.openai.com/backend-api/register-websocket', {
+  async generateAnswer(params: GenerateAnswerParams) {
+    console.log('chatgpt', params.arkoseToken)
+    let conversationId: string | undefined
+
+    const countWords = (text) => {
+      return text.trim().split(/\s+/).length
+    }
+
+    const getConversationTitle = (bigtext: string) => {
+      let ret = bigtext.split('\n', 1)[0]
+      ret = ret.split('.', 1)[0]
+      ret = APPSHORTNAME + ':' + ret.split(':')[1].trim()
+      console.log('getConversationTitle:', ret)
+      return ret
+    }
+
+    const cleanup = () => {
+      if (conversationId) {
+        // setConversationProperty(this.token, conversationId, { is_visible: false })
+      }
+    }
+
+    const regResp = await this.registerWSS(params)
+    await this.setupWSS(params, regResp) // Since params change WSS have to be setup up every time
+
+    const modelName = await this.getModelName()
+    const chatRequirementsToken = await this.getChatRequirementsToken(params)
+    console.debug('Using model:', modelName)
+
+    await fetchSSE('https://chat.openai.com/backend-api/conversation', {
       method: 'POST',
       signal: params.signal,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.token}`,
+        'Openai-Sentinel-Arkose-Token': params.arkoseToken,
+        'Openai-Sentinel-Chat-Requirements-Token': chatRequirementsToken,
       },
-      body: void 0,
+      body: JSON.stringify({
+        action: 'next',
+        messages: [
+          {
+            id: uuidv4(),
+            role: 'user',
+            content: {
+              content_type: 'text',
+              parts: [params.prompt],
+            },
+          },
+        ],
+        model: modelName,
+        parent_message_id: params.parentMessageId || uuidv4(),
+        conversation_id: params.conversationId,
+        arkose_token: params.arkoseToken,
+        conversation_mode: {
+          kind: 'primary_assistant',
+        },
+        history_and_training_disabled: !1,
+        force_paragen: !1,
+        force_rate_limit: !1,
+        suggestions: [],
+        // websocket_request_id://TODO:still working without it
+      }),
+      onMessage(message: string) {
+        console.debug('sse message', message)
+        if (message === '[DONE]') {
+          params.onEvent({ type: 'done' })
+          cleanup()
+          return
+        }
+        let data
+        try {
+          data = JSON.parse(message)
+        } catch (err) {
+          console.error(err)
+          return
+        }
+        const text = data.message?.content?.parts?.[0]
+        if (text) {
+          if (data.message?.author?.role == 'assistant') {
+            if (params.prompt.indexOf('search query:') !== -1) {
+              // this.renameConversationTitle(data.conversation_id)
+            }
+          }
+          conversationId = data.conversation_id
+          console.debug(
+            'ChatGPTProvider:generateAnswer:answer:text(setupWSS:messageListener):',
+            text,
+          )
+          params.onEvent({
+            type: 'answer',
+            data: {
+              text,
+              messageId: data.message.id,
+              parentMessageId: data.parent_message_id,
+              conversationId: data.conversation_id,
+            },
+          })
+        }
+      },
     })
-    return resp
-  }
-
-  async renameConversationTitle(convId: string, params: GenerateAnswerParams) {
-    const titl: string = getConversationTitle(params.prompt)
-    console.log('renameConversationTitle:', this.token, convId, titl)
-    setConversationProperty(this.token, convId, { title: titl })
-  }
-
-  async generateAnswer(params: GenerateAnswerParams) {
-    console.log('ChatGPTProvider:generateAnswer', params.arkoseToken)
-    // let conversationId: string | undefined
-    const config = await getUserConfig()
-    const cleanup = () => {
-      // if (conversationId) {
-      // setConversationProperty(this.token, conversationId, { is_visible: false })
-      // }
-    }
-
-    if (config.chatgptMode == ChatgptMode.SSE) {
-      this.generateAnswerBySSE(params, cleanup)
-    } else {
-      const regResp = await this.registerWSS(params)
-      await this.setupWSS(params, regResp) // Since params change WSS have to be setup up every time
-      this.generateAnswerBySSE(params, cleanup)
-    }
-
     return { cleanup }
   }
 }
