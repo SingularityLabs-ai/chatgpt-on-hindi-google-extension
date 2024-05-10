@@ -63,6 +63,8 @@ Enable "Allow access to search page results" in the extension management page
 
 [![Join us on Discord](https://invidget.switchblade.xyz/jc4xtF58Ve)](https://discord.gg/jc4xtF58Ve)
 
+##     // "@esbuild/win32-x64": "^0.20.2", removed
+
 ##
 
 ## Credit
