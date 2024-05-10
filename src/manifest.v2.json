@@ -10,7 +10,12 @@
     "48": "logo.png",
     "128": "logo.png"
   },
-  "permissions": ["storage", "https://*.openai.com/", "https://*.google.com/"],
+  "permissions": [
+    "storage",
+    "https://*.openai.com/",
+    "https://*.chatgpt.com/",
+    "https://*.google.com/"
+  ],
   "background": {
     "scripts": ["background.js"]
   },

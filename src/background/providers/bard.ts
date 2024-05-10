@@ -28,7 +28,7 @@ export class ChatError extends Error {
 }
 
 // async function request(token: string, method: string, path: string, data?: unknown) {
-//   return fetch(`https://chat.openai.com/backend-api${path}`, {
+//   return fetch(`https://chatgpt.com/backend-api${path}`, {
 //     method,
 //     headers: {
 //       'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const cache = new ExpiryMap(10 * 1000)
 //   if (cache.get(KEY_ACCESS_TOKEN)) {
 //     return cache.get(KEY_ACCESS_TOKEN)
 //   }
-//   const resp = await fetch('https://chat.openai.com/api/auth/session')
+//   const resp = await fetch('https://chatgpt.com/api/auth/session')
 //   if (resp.status === 403) {
 //     throw new Error('CLOUDFLARE')
 //   }
@@ -95,7 +95,7 @@ export class BARDProvider implements Provider {
   private async parseBartResponse(resp: string) {
     const data = JSON.parse(resp.split('\n')[3])
     const payload = JSON.parse(data[0][2])
-    console.log("payload", payload)
+    console.log('payload', payload)
     if (!payload) {
       throw new ChatError(
         'Failed to access Bard, make sure you are logged in at https://bard.google.com',

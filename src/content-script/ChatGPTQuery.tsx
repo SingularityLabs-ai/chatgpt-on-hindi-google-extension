@@ -349,7 +349,7 @@ function ChatGPTQuery(props: Props) {
     return (
       <p>
         Please login and pass Cloudflare check at{' '}
-        <a href="https://chat.openai.com" target="_blank" rel="noreferrer">
+        <a href="https://chatgpt.com" target="_blank" rel="noreferrer">
           chat.openai.com
         </a>
         {retry > 0 &&

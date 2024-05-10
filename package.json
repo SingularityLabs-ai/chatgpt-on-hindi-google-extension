@@ -9,7 +9,6 @@
     "watch": "chokidar src -c 'npm run build'"
   },
   "dependencies": {
-    "@esbuild/win32-x64": "^0.20.2",
     "@geist-ui/core": "^2.3.8",
     "@geist-ui/icons": "^1.0.2",
     "@primer/octicons-react": "^17.9.0",
@@ -22,6 +21,7 @@
     "github-markdown-css": "^5.1.0",
     "i18next-browser-languagedetector": "^7.0.1",
     "inter-ui": "^3.19.3",
+    "llm-playground-chain": "^0.0.6",
     "lodash-es": "^4.17.21",
     "ofetch": "^1.0.1",
     "preact": "^10.11.3",
@@ -74,7 +74,8 @@
     ]
   },
   "engines": {
-    "node": ">=16.15.0 <17.0.0",
-    "npm": ">=8.19.4 <9.0.0"
+    "node": ">=18.17.1 <19.0.0",
+    "pnpm": ">=9.6.7",
+    "npm": ">=9.6.7 <10.0.0"
   }
 }
